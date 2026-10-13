@@ -1,8 +1,14 @@
-"""Módulo 1 · Semana 4 — Planificación: FCFS, SJF, Round Robin y Prioridad.
+"""Módulo 1 · Semana 4 — Planificación de procesos.
 
 El mostrador de recepción es la CPU y cada solicitud de un huésped es un
-proceso. Las cuatro políticas (carpeta politicas/) usan este mismo motor;
-solo cambia el criterio con el que se elige al siguiente huésped del lobby.
+proceso (FichaHuesped = PCB). Este archivo tiene tres partes:
+
+  1. planificar()  el motor que comparten las cuatro políticas
+  2. verificar()   comprueba que la bitácora coincide con los resultados
+  3. ejecutar()    corre las cuatro políticas, imprime y guarda
+
+Cada política (carpeta politicas/) solo decide a quién atiende el mostrador
+a continuación. Todo lo demás es igual para las cuatro.
 """
 import json
 from copy import deepcopy
@@ -13,83 +19,93 @@ from core.metricas import CalculadorMetricas
 from core.modelos import EstadoProceso
 from core.reloj import RelojLogico
 from modulo1_procesos import ESCENARIOS, RESULTADOS
-from modulo1_procesos.politicas import POLITICAS
+from modulo1_procesos.politicas import fcfs, prioridad, round_robin, sjf
 
 
-# ----------------------------------------------------------------- motor ---
+# ============================================================ 1. el motor ===
 def planificar(fichas, elegir, quantum=None, nombre=""):
-    """Atiende la jornada en un solo mostrador.
+    """Atiende una jornada completa en un único mostrador.
 
-    quantum=None -> no expropiativo: cada huésped se atiende hasta terminar.
-    quantum=n    -> expropiativo: n minutos y vuelve al final de la cola.
-    Devuelve las fichas terminadas, el diagrama de Gantt y la bitácora.
+    elegir(cola) -> ficha : el criterio de la política.
+    quantum=None          : no expropiativo, atiende hasta terminar.
+    quantum=n             : expropiativo, atiende n minutos y devuelve a la cola.
     """
     pendientes = sorted(deepcopy(fichas), key=lambda f: (f.llegada, f.pid))
     cola, terminadas, gantt = [], [], []
-    reloj, bitacora = RelojLogico(), Bitacora()
+    reloj = RelojLogico()
+    bitacora = Bitacora()
 
-    def admitir():                       # pasan al lobby los que ya llegaron
+    def admitir():
+        """Pasa al lobby (cola de listos) a los que ya llegaron."""
         while pendientes and pendientes[0].llegada <= reloj.obtener():
-            ficha = pendientes.pop(0)
-            ficha.estado = EstadoProceso.LISTO
-            cola.append(ficha)
+            f = pendientes.pop(0)
+            f.estado = EstadoProceso.LISTO
+            cola.append(f)
+            bitacora.registrar(f.llegada, nombre, f"{f.pid} entra_al_lobby")
 
     admitir()
     while cola or pendientes:
-        if not cola:                     # mostrador ocioso: salta al siguiente arribo
+        if not cola:                            # mostrador ocioso: salta al siguiente arribo
             reloj.avanzar(pendientes[0].llegada - reloj.obtener())
             admitir()
             continue
 
-        f = elegir(cola)
+        f = elegir(cola)                        # la política decide a quién atender
         cola.remove(f)
         f.estado = EstadoProceso.EJECUCION
-        t = reloj.obtener()
-        if f.tiempo_inicio is None:
-            f.tiempo_inicio = t
-        bitacora.registrar(t, nombre, f"{f.pid} inicia")
+        if f.tiempo_inicio is None:             # primera vez que llega al mostrador
+            f.tiempo_inicio = reloj.obtener()
+        bitacora.registrar(reloj.obtener(), nombre, f"{f.pid} ocupa_mostrador")
 
         corre = f.duracion_restante if quantum is None else min(quantum, f.duracion_restante)
-        gantt.append((f.pid, t, t + corre))
+        gantt.append((f.pid, reloj.obtener(), reloj.obtener() + corre))
         reloj.avanzar(corre)
         f.duracion_restante -= corre
-        admitir()                        # los que llegaron mientras atendía
 
-        if f.duracion_restante:          # se acabó su quantum: vuelve a la cola
-            f.estado = EstadoProceso.LISTO
-            cola.append(f)
-            bitacora.registrar(reloj.obtener(), nombre, f"{f.pid} pausa")
-        else:
-            f.estado = EstadoProceso.TERMINADO
+        admitir()                               # los que llegaron mientras era atendido
+
+        if f.duracion_restante == 0:            # terminó su trámite
             f.tiempo_fin = reloj.obtener()
             f.tiempo_espera = f.tiempo_fin - f.llegada - f.duracion
+            f.estado = EstadoProceso.TERMINADO
             terminadas.append(f)
-            bitacora.registrar(f.tiempo_fin, nombre, f"{f.pid} termina")
+            bitacora.registrar(reloj.obtener(), nombre, f"{f.pid} termina")
+        else:                                   # se acabó su quantum
+            f.estado = EstadoProceso.LISTO
+            cola.append(f)                      # vuelve al final del lobby
+            bitacora.registrar(reloj.obtener(), nombre, f"{f.pid} fin_de_quantum")
 
     terminadas.sort(key=lambda f: (f.llegada, f.pid))
     return terminadas, gantt, bitacora
 
 
+# ===================================================== 2. la verificación ===
 def verificar(bitacora, fichas):
-    """Reconstruye inicio y fin leyendo SOLO la bitácora y los compara con
-    las fichas. Si coinciden, la bitácora es fiel a lo que ocurrió."""
+    """Reconstruye inicio y fin de cada solicitud leyendo SOLO la bitácora y
+    los compara con las fichas. Si coinciden, la bitácora es fiel."""
     inicio, fin = {}, {}
-    for ev in bitacora.eventos:
-        pid, accion = ev.descripcion.split()
-        if accion == "inicia":
-            inicio.setdefault(pid, ev.tiempo)
-        elif accion == "termina":
-            fin[pid] = ev.tiempo
+    for evento in bitacora.eventos:
+        pid, accion = evento.descripcion.split()
+        if accion == "ocupa_mostrador" and pid not in inicio:
+            inicio[pid] = evento.tiempo
+        if accion == "termina":
+            fin[pid] = evento.tiempo
     return all(inicio.get(f.pid) == f.tiempo_inicio and fin.get(f.pid) == f.tiempo_fin
                for f in fichas)
 
 
+# ================================================== 3. correr y comparar ===
 def correr(fichas, quantum=4):
-    """Las cuatro políticas sobre la misma jornada."""
+    """Ejecuta las cuatro políticas sobre la misma jornada."""
+    politicas = [                               # (nombre, criterio, quantum)
+        ("FCFS",        fcfs.elegir,        None),
+        ("SJF",         sjf.elegir,         None),
+        ("Round Robin", round_robin.elegir, quantum),   # la única que usa quantum
+        ("Prioridad",   prioridad.elegir,   None),
+    ]
     resultados = {}
-    for nombre, politica in POLITICAS.items():
-        q = quantum if politica.EXPROPIATIVA else None
-        terminadas, gantt, bitacora = planificar(fichas, politica.elegir, q, nombre)
+    for nombre, elegir, q in politicas:
+        terminadas, gantt, bitacora = planificar(fichas, elegir, q, nombre)
         resultados[nombre] = {
             "fichas": terminadas,
             "gantt": gantt,
@@ -100,7 +116,6 @@ def correr(fichas, quantum=4):
     return resultados
 
 
-# ---------------------------------------------------------------- salida ---
 def imprimir(resultados, quantum):
     for nombre, r in resultados.items():
         print(f"\n{nombre}" + (f"  (quantum = {quantum} min)" if nombre == "Round Robin" else ""))
@@ -110,15 +125,26 @@ def imprimir(resultados, quantum):
             print(f"  {f.pid:<5}{f.huesped[:19]:<20}{f.llegada:>5}{f.duracion:>5}{f.prioridad:>5}"
                   f"{f.tiempo_inicio:>5}{f.tiempo_fin:>5}{f.tiempo_espera:>8}"
                   f"{f.tiempo_inicio - f.llegada:>6}{f.tiempo_fin - f.llegada:>9}")
-        print("  Gantt: " + "  ".join(f"{p}[{a}-{b}]" for p, a, b in r["gantt"]))
+        print("  Orden de atención: " + "  ".join(f"{p}[{a}-{b}]" for p, a, b in r["gantt"]))
 
     print(f"\n{'COMPARACIÓN':<16}{'Espera':>10}{'Respuesta':>11}{'Retorno':>10}")
     for nombre, r in resultados.items():
         m = r["metricas"]
         print(f"{nombre:<16}{m['espera_promedio']:>10.2f}"
               f"{m['respuesta_promedio']:>11.2f}{m['retorno_promedio']:>10.2f}")
-    print("\n  espera = fin - llegada - duración · respuesta = inicio - llegada"
-          " · retorno = fin - llegada")
+    print("\n  Espera    = fin - llegada - duración   (minutos en el lobby)")
+    print("  Respuesta = inicio - llegada           (cuánto tarda en ser atendido)")
+    print("  Retorno   = fin - llegada              (trámite de punta a punta)")
+
+
+def guardar(resultados):
+    """Una bitácora por política y un JSON con las métricas."""
+    RESULTADOS.mkdir(exist_ok=True)
+    for nombre, r in resultados.items():
+        r["bitacora"].guardar(RESULTADOS / f"m1_bitacora_{nombre.lower().replace(' ', '_')}.txt")
+    with open(RESULTADOS / "m1_metricas.json", "w", encoding="utf-8") as f:
+        json.dump({n: {"metricas": r["metricas"], "gantt": r["gantt"]}
+                   for n, r in resultados.items()}, f, indent=2, ensure_ascii=False)
 
 
 def ejecutar(jornada="jornada_corta", quantum=4):
@@ -126,13 +152,7 @@ def ejecutar(jornada="jornada_corta", quantum=4):
     print(f"  Jornada: {jornada} · {len(fichas)} solicitudes")
     resultados = correr(fichas, quantum)
     imprimir(resultados, quantum)
-
-    RESULTADOS.mkdir(exist_ok=True)
-    for nombre, r in resultados.items():
-        r["bitacora"].guardar(RESULTADOS / f"m1_bitacora_{nombre.lower().replace(' ', '_')}.txt")
-    with open(RESULTADOS / "m1_metricas.json", "w", encoding="utf-8") as f:
-        json.dump({n: {"metricas": r["metricas"], "gantt": r["gantt"]}
-                   for n, r in resultados.items()}, f, indent=2, ensure_ascii=False)
+    guardar(resultados)
 
     ok = all(r["verificado"] for r in resultados.values())
     print(f"\n  Métricas recalculadas desde la bitácora: {'coinciden' if ok else 'NO COINCIDEN'}")

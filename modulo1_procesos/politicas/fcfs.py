@@ -1,6 +1,6 @@
-"""FCFS — primero en llegar, primero en ser atendido. No expropiativo."""
-EXPROPIATIVA = False
+"""FCFS — se atiende en estricto orden de llegada."""
 
 
 def elegir(cola):
+    # el que llegó primero al lobby
     return min(cola, key=lambda f: (f.llegada, f.pid))

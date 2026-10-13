@@ -1,7 +1,6 @@
-"""Round Robin — el primero de la fila atiende un quantum; si no termina,
-vuelve al final de la cola. Expropiativo."""
-EXPROPIATIVA = True
+"""Round Robin — turnos acotados de mostrador; al agotarse, vuelve a la cola."""
 
 
 def elegir(cola):
+    # el primero de la fila; el quantum lo aplica el motor (planificacion.py)
     return cola[0]
