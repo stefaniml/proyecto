@@ -1,8 +1,8 @@
 """Módulo 1 · Semana 4 — Planificación: FCFS, SJF, Round Robin y Prioridad.
 
 El mostrador de recepción es la CPU y cada solicitud de un huésped es un
-proceso. Las cuatro políticas usan el mismo motor (planificar); solo cambia
-el criterio con el que se elige al siguiente huésped del lobby.
+proceso. Las cuatro políticas (carpeta politicas/) usan este mismo motor;
+solo cambia el criterio con el que se elige al siguiente huésped del lobby.
 """
 import json
 from copy import deepcopy
@@ -13,30 +13,7 @@ from core.metricas import CalculadorMetricas
 from core.modelos import EstadoProceso
 from core.reloj import RelojLogico
 from modulo1_procesos import ESCENARIOS, RESULTADOS
-
-
-# --------------------------------------------- criterio de cada política ---
-def fcfs(cola):
-    """Primero en llegar, primero en ser atendido."""
-    return min(cola, key=lambda f: (f.llegada, f.pid))
-
-
-def sjf(cola):
-    """Entre los que esperan, el trámite más corto."""
-    return min(cola, key=lambda f: (f.duracion, f.llegada, f.pid))
-
-
-def round_robin(cola):
-    """El primero de la fila; si no termina en su quantum, vuelve al final."""
-    return cola[0]
-
-
-def prioridad(cola):
-    """El de mayor prioridad (1 = la más alta)."""
-    return min(cola, key=lambda f: (f.prioridad, f.llegada, f.pid))
-
-
-POLITICAS = {"FCFS": fcfs, "SJF": sjf, "Round Robin": round_robin, "Prioridad": prioridad}
+from modulo1_procesos.politicas import POLITICAS
 
 
 # ----------------------------------------------------------------- motor ---
@@ -110,9 +87,9 @@ def verificar(bitacora, fichas):
 def correr(fichas, quantum=4):
     """Las cuatro políticas sobre la misma jornada."""
     resultados = {}
-    for nombre, elegir in POLITICAS.items():
-        q = quantum if elegir is round_robin else None
-        terminadas, gantt, bitacora = planificar(fichas, elegir, q, nombre)
+    for nombre, politica in POLITICAS.items():
+        q = quantum if politica.EXPROPIATIVA else None
+        terminadas, gantt, bitacora = planificar(fichas, politica.elegir, q, nombre)
         resultados[nombre] = {
             "fichas": terminadas,
             "gantt": gantt,

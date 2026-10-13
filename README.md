@@ -46,7 +46,8 @@ core/                       lo compartido por todos los módulos
   metricas.py               espera, respuesta y retorno promedio
 escenarios/                 entradas: jornada_corta.json · jornada_dia.json · tareas.json
 modulo1_procesos/           Módulo 1 — procesos, hilos y planificación
-  planificacion.py          FCFS, SJF, Round Robin y Prioridad con un mismo motor
+  planificacion.py          motor común, verificación con la bitácora y comparación
+  politicas/                fcfs.py · sjf.py · round_robin.py · prioridad.py
   graficos.py               figuras del informe
   procesos_hilos/           hilos.py · mostrador.c · atender.c · Makefile
 modulo2_sincronizacion/     Módulo 2 — registro, limpieza, interbloqueo
