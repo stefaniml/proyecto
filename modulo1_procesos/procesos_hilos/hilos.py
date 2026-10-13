@@ -2,9 +2,8 @@
 
 Un trámite tiene varias tareas (escenarios/tareas.json). Con un recepcionista
 salen una tras otra; con un hilo por tarea, salen a la vez. Este archivo
-cronometra las dos formas y guarda los tiempos en resultados/m1_hilos.csv.
+cronometra las dos formas y guarda los tiempos en resultados/m1_hilos.json.
 """
-import csv
 import json
 import statistics
 import threading
@@ -57,10 +56,8 @@ def ejecutar():
     print("  más lenta. No llega al ideal porque crear y esperar hilos también cuesta.")
 
     RESULTADOS.mkdir(exist_ok=True)
-    ruta = RESULTADOS / "m1_hilos.csv"
-    with open(ruta, "w", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=filas[0])
-        w.writeheader()
-        w.writerows(filas)
+    ruta = RESULTADOS / "m1_hilos.json"
+    with open(ruta, "w", encoding="utf-8") as f:
+        json.dump(filas, f, indent=2, ensure_ascii=False)
     print(f"\n  Tiempos en resultados/{ruta.name}")
     return filas

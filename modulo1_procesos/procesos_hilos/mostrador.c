@@ -131,13 +131,15 @@ int main(int argc, char *argv[]) {
     printf("  Ahorro                  : %6.1fx\n", suma / paralelo);
 
     mkdir("resultados", 0775);
-    FILE *f = fopen("resultados/m1_traza_fork.csv", "w");
+    FILE *f = fopen("resultados/m1_traza_fork.json", "w");
     if (f) {
-        fprintf(f, "id,huesped,pid,duracion_ms\n");
+        fprintf(f, "[\n");
         for (int i = 0; i < n; i++)
-            fprintf(f, "%s,%s,%d,%.1f\n", s[i].id, s[i].huesped, s[i].pid, s[i].fin_ms);
+            fprintf(f, "  {\"pid\": \"%s\", \"huesped\": \"%s\", \"pid_so\": %d, \"duracion_ms\": %.1f}%s\n",
+                    s[i].id, s[i].huesped, s[i].pid, s[i].fin_ms, i + 1 < n ? "," : "");
+        fprintf(f, "]\n");
         fclose(f);
-        printf("\nTraza en resultados/m1_traza_fork.csv  ->  python main.py graficos\n");
+        printf("\nTraza en resultados/m1_traza_fork.json  ->  python main.py graficos\n");
     }
     return 0;
 }

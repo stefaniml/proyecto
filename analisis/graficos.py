@@ -6,7 +6,6 @@ herramientas comunes de abajo) y registrarla en FIGURAS.
 
     python main.py graficos      dibuja todas las que tengan datos
 """
-import csv
 import json
 
 import matplotlib
@@ -21,12 +20,12 @@ GUINDA, ORO, TINTA, SUAVE, MALLA = "#7A1F2B", "#D9A441", "#2E2422", "#8C7F79", "
 
 
 # ===================================================== herramientas comunes ===
-def _leer_csv(nombre):
+def _leer(nombre):
+    """Lee un JSON de resultados/; None si ese módulo aún no se ejecutó."""
     ruta = RESULTADOS / nombre
     if not ruta.exists():
-        return []
-    with open(ruta, encoding="utf-8") as f:
-        return list(csv.DictReader(f))
+        return None
+    return json.loads(ruta.read_text(encoding="utf-8"))
 
 
 def _guardar(fig, ax, nombre):
@@ -58,10 +57,9 @@ def _barras_pareadas(nombres, a, b, etiqueta_a, etiqueta_b, unidad, archivo):
 
 # ================================================================ Módulo 1 ===
 def comparacion_politicas():
-    ruta = RESULTADOS / "m1_metricas.json"
-    if not ruta.exists():
+    datos = _leer("m1_metricas.json")
+    if not datos:
         return None
-    datos = json.loads(ruta.read_text(encoding="utf-8"))
     return _barras_pareadas(
         list(datos),
         [d["metricas"]["espera_promedio"] for d in datos.values()],
@@ -70,23 +68,23 @@ def comparacion_politicas():
 
 
 def hilos():
-    filas = _leer_csv("m1_hilos.csv")
+    filas = _leer("m1_hilos.json")
     if not filas:
         return None
     return _barras_pareadas(
         [f'{f["tramite"]} ({f["tareas"]} tareas)' for f in filas],
-        [float(f["sin_hilos"]) for f in filas],
-        [float(f["con_hilos"]) for f in filas],
+        [f["sin_hilos"] for f in filas],
+        [f["con_hilos"] for f in filas],
         "Sin hilos", "Con hilos", "segundos", "m1_hilos.png")
 
 
 def fork_exec():
     """Cuánto duró cada proceso, y la jornada con fork frente a uno tras otro."""
-    filas = _leer_csv("m1_traza_fork.csv")
+    filas = _leer("m1_traza_fork.json")
     if not filas:
         return None
-    nombres = [f'{f["id"]} · {f["huesped"]}' for f in filas]
-    duraciones = [float(f["duracion_ms"]) for f in filas]
+    nombres = [f'{f["pid"]} · {f["huesped"]}' for f in filas]
+    duraciones = [f["duracion_ms"] for f in filas]
     con_fork, sin_fork = max(duraciones), sum(duraciones)
 
     fig, ax = plt.subplots(figsize=(8.6, 0.5 * len(filas) + 2.4))
