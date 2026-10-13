@@ -13,7 +13,7 @@ import time
 from modulo1_procesos import ESCENARIOS, RESULTADOS
 
 DURACION = 0.15        # segundos que "cuesta" cada tarea (espera de banco, impresora...)
-REPETICIONES = 5       # se mide varias veces y se toma la mediana
+REPETICIONES = 5       # se mide varias veces y se toma la media (promedio)
 
 
 def tarea():
@@ -40,15 +40,15 @@ def con_hilos(n):
 
 
 def ejecutar():
-    print(f"  Cada tarea cuesta {DURACION} s · mediana de {REPETICIONES} mediciones\n")
+    print(f"  Cada tarea cuesta {DURACION} s · media de {REPETICIONES} mediciones\n")
     print(f"  {'Trámite':<10}{'Tareas':>7}{'Sin hilos':>12}{'Con hilos':>12}{'Mejora':>9}")
 
     filas = []
     tramites = json.loads((ESCENARIOS / "tareas.json").read_text(encoding="utf-8"))
     for tramite, tareas in tramites.items():
         n = len(tareas)
-        sec = statistics.median(sin_hilos(n) for _ in range(REPETICIONES))
-        con = statistics.median(con_hilos(n) for _ in range(REPETICIONES))
+        sec = statistics.mean(sin_hilos(n) for _ in range(REPETICIONES))
+        con = statistics.mean(con_hilos(n) for _ in range(REPETICIONES))
         filas.append({"tramite": tramite, "tareas": n, "sin_hilos": round(sec, 4),
                       "con_hilos": round(con, 4), "mejora": round(sec / con, 2)})
         print(f"  {tramite:<10}{n:>7}{sec:>11.2f}s{con:>11.2f}s{sec / con:>8.2f}×")
