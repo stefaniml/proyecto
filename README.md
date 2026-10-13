@@ -1,4 +1,4 @@
-# SO-Sim · Simulador de Sistemas Operativos
+# Simulador de Sistemas Operativos
 
 Caso aplicado: **Hotel Las Estrellas** · SW407 Sistemas Operativos · UNI
 
