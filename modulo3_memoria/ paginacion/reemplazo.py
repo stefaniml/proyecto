@@ -1,17 +1,49 @@
-class GestorReemplazo:
-    """Administra las políticas de reemplazo de páginas (FIFO, LRU)."""
-    def __init__(self, politica="FIFO"):
-        self.politica = politica
-        self.cola_fifo = []  # Rastrea el orden de llegada a los marcos
+from typing import List
 
-    def registrar_carga(self, frame_number):
-        """Registra que un marco acaba de ser ocupado."""
-        if self.politica == "FIFO":
-            self.cola_fifo.append(frame_number)
+class AlgoritmosReemplazo:
+    @staticmethod
+    def fifo(secuencia: List[int], marcos_totales: int) -> int:
+        marcos = []
+        fallos = 0
+        for pag in secuencia:
+            if pag not in marcos:
+                fallos += 1
+                if len(marcos) >= marcos_totales:
+                    marcos.pop(0)
+                marcos.append(pag)
+        return fallos
 
-    def seleccionar_victima(self):
-        """Selecciona qué marco liberar según la política elegida."""
-        if self.politica == "FIFO" and self.cola_fifo:
-            return self.cola_fifo.pop(0) # Retorna el marco más antiguo
-        # Aquí se puede expandir para LRU en el futuro
-        return None
+    @staticmethod
+    def lru(secuencia: List[int], marcos_totales: int) -> int:
+        marcos = []
+        fallos = 0
+        for pag in secuencia:
+            if pag not in marcos:
+                fallos += 1
+                if len(marcos) >= marcos_totales:
+                    marcos.pop(0)
+                marcos.append(pag)
+            else:
+                marcos.remove(pag)
+                marcos.append(pag)
+        return fallos
+
+    @staticmethod
+    def optimo(secuencia: List[int], marcos_totales: int) -> int:
+        marcos = []
+        fallos = 0
+        for i, pag in enumerate(secuencia):
+            if pag not in marcos:
+                fallos += 1
+                if len(marcos) >= marcos_totales:
+                    futuro = secuencia[i+1:]
+                    indices = []
+                    for m in marcos:
+                        if m in futuro:
+                            indices.append(futuro.index(m))
+                        else:
+                            indices.append(float('inf'))
+                    victima = indices.index(max(indices))
+                    marcos.pop(victima)
+                marcos.append(pag)
+        return fallos
