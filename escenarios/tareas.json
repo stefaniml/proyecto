@@ -1,0 +1,18 @@
+{
+  "pedido": [
+    "tomar el pedido",
+    "avisar a cocina"
+  ],
+  "checkin": [
+    "verificar tarjeta",
+    "asignar habitacion",
+    "emitir boleta"
+  ],
+  "grupo": [
+    "verificar convenio",
+    "asignar bloque de habitaciones",
+    "cargar datos de 12 huespedes",
+    "emitir boletas",
+    "avisar a housekeeping"
+  ]
+}

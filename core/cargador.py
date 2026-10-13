@@ -1,6 +1,6 @@
 import json
 from typing import List
-from nucleo.modelos import FichaHuesped
+from core.modelos import FichaHuesped
 
 class CargadorJornada:
     @staticmethod
@@ -14,7 +14,9 @@ class CargadorJornada:
                     pid=p["pid"],
                     llegada=p["llegada"],
                     duracion=p["duracion"],
-                    prioridad=p["prioridad"]
+                    prioridad=p["prioridad"],
+                    huesped=p.get("huesped", ""),
+                    tramite=p.get("tramite", "")
                 )
             )
         return procesos
