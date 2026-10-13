@@ -17,10 +17,11 @@ o WSL con `gcc` y `make`.
 ## Cómo ejecutar
 
 ```
-python main.py                         todos los módulos disponibles
+python main.py                         todos los módulos y luego los gráficos
 python main.py 1                       Módulo 1 completo
-python main.py 1 planificacion         una parte: planificacion | hilos | graficos
+python main.py 1 planificacion         una parte: planificacion | hilos
 python main.py 1 planificacion --jornada jornada_dia --quantum 2
+python main.py graficos                figuras de todos los módulos
 python -m pytest tests -q              pruebas
 ```
 
@@ -45,10 +46,10 @@ core/                       lo compartido por todos los módulos
   bitacora.py · reloj.py    registro de eventos y tiempo lógico
   metricas.py               espera, respuesta y retorno promedio
 escenarios/                 entradas: jornada_corta.json · jornada_dia.json · tareas.json
+analisis/graficos.py        gráficos de TODOS los módulos, con un mismo estilo
 modulo1_procesos/           Módulo 1 — procesos, hilos y planificación
   planificacion.py          motor común, verificación con la bitácora y comparación
   politicas/                fcfs.py · sjf.py · round_robin.py · prioridad.py
-  graficos.py               figuras del informe
   procesos_hilos/           hilos.py · mostrador.c · atender.c · Makefile
 modulo2_sincronizacion/     Módulo 2 — registro, limpieza, interbloqueo
 modulo3_memoria/            Módulo 3 — contigua/ y paginacion/

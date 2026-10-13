@@ -1,10 +1,10 @@
-"""Figuras del Módulo 1 para el informe (se guardan en resultados/).
+"""Gráficos de TODOS los módulos, con un mismo estilo.
 
-    m1_metricas.json    ->  m1_politicas.png   (Semana 4)
-    m1_hilos.csv        ->  m1_hilos.png       (Semana 3)
-    m1_traza_fork.csv   ->  m1_fork_exec.png   (Semana 3, C)
+Cada módulo deja sus datos en resultados/ y aquí se dibujan sus figuras.
+Para añadir las de otro módulo: escribir su función (usando las
+herramientas comunes de abajo) y registrarla en FIGURAS.
 
-Cada figura se dibuja solo si su parte ya se ejecutó.
+    python main.py graficos      dibuja todas las que tengan datos
 """
 import csv
 import json
@@ -13,11 +13,14 @@ import matplotlib
 matplotlib.use("Agg")           # sin ventana: solo guarda el archivo
 import matplotlib.pyplot as plt
 
-from modulo1_procesos import RESULTADOS
+from pathlib import Path
+
+RESULTADOS = Path(__file__).resolve().parent.parent / "resultados"
 
 GUINDA, ORO, TINTA, SUAVE, MALLA = "#7A1F2B", "#D9A441", "#2E2422", "#8C7F79", "#EDE7E7"
 
 
+# ===================================================== herramientas comunes ===
 def _leer_csv(nombre):
     ruta = RESULTADOS / nombre
     if not ruta.exists():
@@ -53,6 +56,7 @@ def _barras_pareadas(nombres, a, b, etiqueta_a, etiqueta_b, unidad, archivo):
     return _guardar(fig, ax, archivo)
 
 
+# ================================================================ Módulo 1 ===
 def comparacion_politicas():
     ruta = RESULTADOS / "m1_metricas.json"
     if not ruta.exists():
@@ -99,17 +103,25 @@ def fork_exec():
     return _guardar(fig, ax, "m1_fork_exec.png")
 
 
+# ================================================================ Módulo 2 ===
+# (aquí van las figuras de sincronización)
+
+# ================================================================ Módulo 3 ===
+# (aquí van las figuras de memoria)
+
+
+# (módulo, figura, función, qué ejecutar antes si faltan datos)
 FIGURAS = [
-    ("comparación de políticas", comparacion_politicas, "python main.py 1 planificacion"),
-    ("con y sin hilos", hilos, "python main.py 1 hilos"),
-    ("fork y exec", fork_exec, "./modulo1_procesos/procesos_hilos/mostrador  (Linux/WSL)"),
+    (1, "comparación de políticas", comparacion_politicas, "python main.py 1 planificacion"),
+    (1, "con y sin hilos", hilos, "python main.py 1 hilos"),
+    (1, "fork y exec", fork_exec, "./modulo1_procesos/procesos_hilos/mostrador  (Linux/WSL)"),
 ]
 
 
 def ejecutar():
-    for nombre, generar, falta in FIGURAS:
+    for modulo, nombre, generar, falta in FIGURAS:
         salida = generar()
         if salida:
-            print(f"  {nombre:<26} -> resultados/{salida.name}")
+            print(f"  M{modulo} · {nombre:<26} -> resultados/{salida.name}")
         else:
-            print(f"  {nombre:<26} -- sin datos. Corre antes:  {falta}")
+            print(f"  M{modulo} · {nombre:<26} -- sin datos. Corre antes:  {falta}")

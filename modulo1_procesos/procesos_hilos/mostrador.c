@@ -137,7 +137,7 @@ int main(int argc, char *argv[]) {
         for (int i = 0; i < n; i++)
             fprintf(f, "%s,%s,%d,%.1f\n", s[i].id, s[i].huesped, s[i].pid, s[i].fin_ms);
         fclose(f);
-        printf("\nTraza en resultados/m1_traza_fork.csv  ->  python main.py 1 graficos\n");
+        printf("\nTraza en resultados/m1_traza_fork.csv  ->  python main.py graficos\n");
     }
     return 0;
 }
