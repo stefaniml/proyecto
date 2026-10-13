@@ -1,6 +1,6 @@
 from enum import Enum
-from dataclasses import dataclass, field
-from typing import List, Optional
+from dataclasses import dataclass
+from typing import Optional
 
 class EstadoProceso(Enum):
     NUEVO = "Nuevo"
@@ -10,7 +10,7 @@ class EstadoProceso(Enum):
     TERMINADO = "Terminado"
 
 @dataclass
-class FichaHuesped:  # Equivalente a Process Control Block (PCB)
+class FichaHuesped:
     pid: str
     llegada: int
     duracion: int
@@ -27,7 +27,5 @@ class FichaHuesped:  # Equivalente a Process Control Block (PCB)
 @dataclass
 class EventoBitacora:
     tiempo: int
-    pid: str
+    modulo: str
     descripcion: str
-    estado_anterior: Optional[EstadoProceso] = None
-    estado_nuevo: Optional[EstadoProceso] = None
