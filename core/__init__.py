@@ -1,1 +1,1 @@
-
+# Inicializador del paquete núcleo
