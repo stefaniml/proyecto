@@ -1,8 +1,8 @@
 __pycache__/
 *.pyc
 .pytest_cache/
-resultados/*.json
-resultados/*.png
-modulo1_procesos/demos_c/demo_fork_exec
-modulo1_procesos/demos_c/demo_pthreads
+resultados/*
+!resultados/.gitkeep
+modulo1_procesos/procesos_hilos/mostrador
+modulo1_procesos/procesos_hilos/atender
 .venv/

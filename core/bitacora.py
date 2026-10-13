@@ -1,5 +1,5 @@
 from typing import List
-from nucleo.modelos import EventoBitacora
+from core.modelos import EventoBitacora
 
 class Bitacora:
     def __init__(self):

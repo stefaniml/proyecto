@@ -20,7 +20,9 @@ class FichaHuesped:
     tiempo_inicio: Optional[int] = None
     tiempo_fin: Optional[int] = None
     tiempo_espera: int = 0
-    
+    huesped: str = ""
+    tramite: str = ""
+
     def __post_init__(self):
         self.duracion_restante = self.duracion
 

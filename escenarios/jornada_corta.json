@@ -1,0 +1,8 @@
+{
+  "solicitudes": [
+    {"pid": "P1", "huesped": "Sra. Ramirez", "tramite": "check-in reserva 4821", "llegada": 0, "duracion": 5, "prioridad": 3},
+    {"pid": "P2", "huesped": "Hab. 412", "tramite": "pedido de room service", "llegada": 1, "duracion": 3, "prioridad": 4},
+    {"pid": "P3", "huesped": "Delegacion Andina", "tramite": "check-in de grupo (12 hab.)", "llegada": 2, "duracion": 8, "prioridad": 1},
+    {"pid": "P4", "huesped": "Sr. Quispe", "tramite": "check-in con verificacion bancaria", "llegada": 3, "duracion": 6, "prioridad": 2}
+  ]
+}
