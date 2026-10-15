@@ -16,7 +16,7 @@ REPETICIONES = 5       # se mide varias veces y se toma la media (promedio)
 
 
 def tarea():
-    time.sleep(DURACION)
+    time.sleep(DURACION)       # LO QUE DURA cada tarea (0.15 s)
 
 
 def sin_hilos(n):
@@ -30,11 +30,18 @@ def sin_hilos(n):
 def con_hilos(n):
     """Un hilo por tarea: todas avanzan a la vez."""
     inicio = time.perf_counter()
+
+    # ① CREA un hilo por cada tarea
     hilos = [threading.Thread(target=tarea) for _ in range(n)]
+
+    # ② LOS ARRANCA: todas las tareas empiezan a la vez
     for h in hilos:
         h.start()
+
+    # ③ LOS ESPERA: el trámite termina cuando acaban todos
     for h in hilos:
-        h.join()           # el trámite no se cierra hasta que todas acaban
+        h.join()
+
     return time.perf_counter() - inicio
 
 
@@ -51,9 +58,6 @@ def ejecutar():
         filas.append({"tramite": tramite, "tareas": n, "sin_hilos": round(sec, 4),
                       "con_hilos": round(con, 4), "mejora": round(sec / con, 2)})
         print(f"  {tramite:<10}{n:>7}{sec:>11.2f}s{con:>11.2f}s{sec / con:>8.2f}×")
-
-    print("\n  Sin hilos el tiempo crece con cada tarea; con hilos dura lo que la")
-    print("  más lenta. No llega al ideal porque crear y esperar hilos también cuesta.")
 
     RESULTADOS.mkdir(exist_ok=True)
     ruta = RESULTADOS / "m1_hilos.json"

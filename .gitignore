@@ -3,6 +3,6 @@ __pycache__/
 .pytest_cache/
 resultados/*
 !resultados/.gitkeep
-modulo1_procesos/procesos_hilos/mostrador
-modulo1_procesos/procesos_hilos/atender
+modulo1_procesos/procesos_c/padre_mostrador
+modulo1_procesos/procesos_c/hijo_atender
 .venv/

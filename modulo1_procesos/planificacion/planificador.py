@@ -7,7 +7,7 @@ proceso (FichaHuesped = PCB). Este archivo tiene tres partes:
   2. verificar()   comprueba que la bitácora coincide con los resultados
   3. ejecutar()    corre las cuatro políticas, imprime y guarda
 
-Cada política (carpeta politicas/) solo decide a quién atiende el mostrador
+Cada política (fcfs.py, sjf.py, …) solo decide a quién atiende el mostrador
 a continuación. Todo lo demás es igual para las cuatro.
 """
 import json
@@ -19,7 +19,7 @@ from core.metricas import CalculadorMetricas
 from core.modelos import EstadoProceso
 from core.reloj import RelojLogico
 from modulo1_procesos import ESCENARIOS, RESULTADOS
-from modulo1_procesos.politicas import fcfs, prioridad, round_robin, sjf
+from modulo1_procesos.planificacion import fcfs, prioridad, round_robin, sjf
 
 
 # ============================================================ 1. el motor ===
@@ -50,29 +50,37 @@ def planificar(fichas, elegir, quantum=None, nombre=""):
             admitir()
             continue
 
-        f = elegir(cola)                        # la política decide a quién atender
+        # ① LA POLÍTICA ELIGE a quién atender (FCFS, SJF, Prioridad o Round Robin)
+        f = elegir(cola)
         cola.remove(f)
         f.estado = EstadoProceso.EJECUCION
         if f.tiempo_inicio is None:             # primera vez que llega al mostrador
             f.tiempo_inicio = reloj.obtener()
         bitacora.registrar(reloj.obtener(), nombre, f"{f.pid} ocupa_mostrador")
 
-        corre = f.duracion_restante if quantum is None else min(quantum, f.duracion_restante)
-        gantt.append((f.pid, reloj.obtener(), reloj.obtener() + corre))
-        reloj.avanzar(corre)
-        f.duracion_restante -= corre
+        # ② CUÁNTO TIEMPO lo atiende
+        if quantum is None:
+            atencion = f.duracion_restante                  # sin quantum: hasta terminar
+        else:
+            atencion = min(quantum, f.duracion_restante)    # Round Robin: como máximo el quantum
+
+        # ③ PASA EL TIEMPO de la atención
+        gantt.append((f.pid, reloj.obtener(), reloj.obtener() + atencion))
+        reloj.avanzar(atencion)
+        f.duracion_restante -= atencion
 
         admitir()                               # los que llegaron mientras era atendido
 
-        if f.duracion_restante == 0:            # terminó su trámite
+        # ④ ¿TERMINÓ? Sale del hotel. ¿No? Vuelve al final de la fila (Round Robin)
+        if f.duracion_restante == 0:
             f.tiempo_fin = reloj.obtener()
             f.tiempo_espera = f.tiempo_fin - f.llegada - f.duracion
             f.estado = EstadoProceso.TERMINADO
             terminadas.append(f)
             bitacora.registrar(reloj.obtener(), nombre, f"{f.pid} termina")
-        else:                                   # se acabó su quantum
+        else:
             f.estado = EstadoProceso.LISTO
-            cola.append(f)                      # vuelve al final del lobby
+            cola.append(f)
             bitacora.registrar(reloj.obtener(), nombre, f"{f.pid} fin_de_quantum")
 
     terminadas.sort(key=lambda f: (f.llegada, f.pid))
