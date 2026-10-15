@@ -10,6 +10,7 @@
  *   make -C modulo1_procesos/procesos_hilos
  *   ./modulo1_procesos/procesos_hilos/mostrador [escenarios/jornada_dia.json]
  */
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -79,8 +80,15 @@ static int leer_jornada(const char *ruta, struct Solicitud *s) {
 }
 
 int main(int argc, char *argv[]) {
+    /* La jornada recibida se resuelve ANTES de cambiar de carpeta, para que
+       una ruta relativa se entienda desde donde se ejecuto el programa. */
+    char ruta_absoluta[PATH_MAX];
+    const char *ruta = JORNADA;
+    if (argc > 1) {
+        if (!realpath(argv[1], ruta_absoluta)) { perror(argv[1]); return 1; }
+        ruta = ruta_absoluta;
+    }
     ir_a_la_raiz();
-    const char *ruta = argc > 1 ? argv[1] : JORNADA;
 
     struct Solicitud s[MAX];
     int n = leer_jornada(ruta, s);
@@ -125,10 +133,20 @@ int main(int argc, char *argv[]) {
     double paralelo = ahora_ms() - t0, suma = 0;
     for (int i = 0; i < n; i++) suma += s[i].fin_ms;
 
-    printf("\nMostrador cerrado: %d/%d solicitudes atendidas.\n", n, n);
-    printf("  Con fork (en paralelo)  : %6.0f ms\n", paralelo);
-    printf("  Sin fork (uno tras otro): %6.0f ms\n", suma);
-    printf("  Ahorro                  : %6.1fx\n", suma / paralelo);
+    /* Esperado: lo que pide el tramite (1 min = 100 ms). Medido: lo que tardo
+       de verdad; la diferencia es el costo de fork(), exec() y wait(). */
+    printf("\nMostrador cerrado: %d/%d solicitudes atendidas.\n\n", n, n);
+    printf("  %-5s %-20s %9s %9s %8s\n", "Sol.", "Huesped", "Esperado", "Medido", "Costo");
+    printf("  ----------------------------------------------------------\n");
+    for (int i = 0; i < n; i++) {
+        double esperado = atoi(s[i].minutos) * 100.0;
+        printf("  %-5s %-20.20s %6.0f ms %6.0f ms %5.1f ms\n",
+               s[i].id, s[i].huesped, esperado, s[i].fin_ms, s[i].fin_ms - esperado);
+    }
+    printf("  ----------------------------------------------------------\n");
+    printf("  Con fork (en paralelo)  : %6.0f ms   dura lo que la solicitud mas larga\n", paralelo);
+    printf("  Sin fork (uno tras otro): %6.0f ms   la suma de todas\n", suma);
+    printf("  Ahorro                  : %6.1f x    mas rapido atendiendo a la vez\n", suma / paralelo);
 
     mkdir("resultados", 0775);
     FILE *f = fopen("resultados/m1_traza_fork.json", "w");

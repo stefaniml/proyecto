@@ -1,14 +1,14 @@
 {
   "solicitudes": [
-    {"pid": "P1", "huesped": "Sra. Ramirez", "tramite": "check-in reserva 4821", "llegada": 0, "duracion": 5, "prioridad": 3},
-    {"pid": "P2", "huesped": "Hab. 412", "tramite": "pedido de room service", "llegada": 1, "duracion": 3, "prioridad": 4},
-    {"pid": "P3", "huesped": "Delegacion Andina", "tramite": "check-in de grupo (12 hab.)", "llegada": 2, "duracion": 8, "prioridad": 1},
-    {"pid": "P4", "huesped": "Sr. Quispe", "tramite": "check-in con verificacion bancaria", "llegada": 3, "duracion": 6, "prioridad": 2},
-    {"pid": "P5", "huesped": "Hab. 205", "tramite": "cambio de habitacion", "llegada": 6, "duracion": 4, "prioridad": 3},
-    {"pid": "P6", "huesped": "Sr. Tanaka", "tramite": "check-out con factura", "llegada": 8, "duracion": 3, "prioridad": 2},
-    {"pid": "P7", "huesped": "Familia Rojas", "tramite": "check-in reserva 4910", "llegada": 9, "duracion": 7, "prioridad": 3},
-    {"pid": "P8", "huesped": "Hab. 118", "tramite": "pedido de lavanderia", "llegada": 11, "duracion": 2, "prioridad": 5},
-    {"pid": "P9", "huesped": "Gerencia", "tramite": "reporte de ocupacion", "llegada": 12, "duracion": 4, "prioridad": 1},
-    {"pid": "P10", "huesped": "Sra. Delgado", "tramite": "check-out express", "llegada": 15, "duracion": 2, "prioridad": 4}
+    {"pid": "P1", "huesped": "Sra. Ramirez", "tramite": "check-in reserva 4821", "llegada": 0, "duracion": 6, "prioridad": 3},
+    {"pid": "P2", "huesped": "Hab. 412", "tramite": "pedido de room service", "llegada": 1, "duracion": 2, "prioridad": 4},
+    {"pid": "P3", "huesped": "Delegacion Andina", "tramite": "check-in de grupo (12 hab.)", "llegada": 2, "duracion": 9, "prioridad": 1},
+    {"pid": "P4", "huesped": "Sr. Quispe", "tramite": "check-in con verificacion bancaria", "llegada": 4, "duracion": 5, "prioridad": 2},
+    {"pid": "P5", "huesped": "Hab. 205", "tramite": "cambio de habitacion", "llegada": 5, "duracion": 3, "prioridad": 3},
+    {"pid": "P6", "huesped": "Sr. Tanaka", "tramite": "check-out con factura", "llegada": 7, "duracion": 4, "prioridad": 2},
+    {"pid": "P7", "huesped": "Familia Rojas", "tramite": "check-in reserva 4910", "llegada": 9, "duracion": 6, "prioridad": 3},
+    {"pid": "P8", "huesped": "Hab. 118", "tramite": "pedido de lavanderia", "llegada": 12, "duracion": 1, "prioridad": 5},
+    {"pid": "P9", "huesped": "Gerencia", "tramite": "reporte de ocupacion", "llegada": 13, "duracion": 5, "prioridad": 1},
+    {"pid": "P10", "huesped": "Sra. Delgado", "tramite": "check-out express", "llegada": 16, "duracion": 2, "prioridad": 4}
   ]
 }
