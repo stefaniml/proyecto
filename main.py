@@ -141,13 +141,23 @@ def graficos():
     g.ejecutar()
 
 
+# ================================================================== pruebas ===
+def pruebas():
+    try:
+        import pytest
+    except ImportError:
+        print("  Falta pytest. Instálalo con:  pip install -r requirements.txt")
+        return
+    pytest.main([str(RAIZ / "tests"), "-v", "-p", "no:cacheprovider"])
+
+
 # ===================================================================== menú ===
 # Cada opción es (texto, acción, ¿necesita C/Linux?). La acción es una función,
 # o una lista de opciones: en ese caso se abre como submenú.
 MODULO1 = [
+    ("Procesos reales en C: fork, exec y wait", m1_fork_exec, True),
     ("Hilos: el mismo trámite con y sin hilos", m1_hilos, False),
     ("Planificación: FCFS, SJF, Round Robin, Prioridad", m1_planificacion, False),
-    ("Procesos reales en C: fork, exec y wait", m1_fork_exec, True),
 ]
 
 OPCIONES = [
@@ -155,6 +165,7 @@ OPCIONES = [
     ("Módulo 2 · Sincronización: mutex, productor-consumidor, interbloqueo", m2_sincronizacion, False),
     ("Módulo 3 · Memoria: asignación contigua, MMU y reemplazo", m3_memoria, False),
     ("Gráficos de todos los módulos", graficos, False),
+    ("Pruebas automáticas (pytest)", pruebas, False),
 ]
 
 

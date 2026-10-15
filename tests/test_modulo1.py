@@ -1,9 +1,13 @@
-"""Pruebas del Módulo 1.  python -m pytest tests -q
+"""Pruebas del Módulo 1. Se ejecutan desde el menú (Pruebas automáticas) o con
+python -m pytest tests -v
 
 La jornada corta (5 solicitudes) es pequeña a propósito: sus promedios se
 calcularon a mano y el simulador debe reproducirlos exactamente.
 """
+import json
 import os
+import shutil
+import subprocess
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -11,8 +15,11 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import pytest
 
 from core.cargador import CargadorJornada
-from modulo1_procesos import ESCENARIOS
+from modulo1_procesos import ESCENARIOS, RAIZ, RESULTADOS
+from modulo1_procesos.hilos import hilos
 from modulo1_procesos.planificacion.planificador import correr
+
+# =============================================================== planificación ===
 
 # (espera, respuesta, retorno) promedio de la jornada corta, calculados a mano
 ESPERADO = {
@@ -62,3 +69,31 @@ def test_round_robin_parte_la_solicitud_larga(resultados):
 def test_la_jornada_dia_tambien_se_verifica():
     fichas = CargadorJornada.cargar(ESCENARIOS / "jornada_dia.json")
     assert all(r["verificado"] for r in correr(fichas).values())
+
+
+# ======================================================================= hilos ===
+def test_con_hilos_las_tareas_van_a_la_vez():
+    """3 tareas de 0.15 s: sin hilos ~0.45 s; con hilos dura lo que una sola."""
+    assert hilos.sin_hilos(3) >= 3 * hilos.DURACION
+    assert hilos.con_hilos(3) < 2 * hilos.DURACION
+
+
+# ==================================================== procesos: fork, exec y wait ===
+COMPILADOR = shutil.which("gcc") or shutil.which("clang")
+
+
+@pytest.mark.skipif(os.name != "posix" or not COMPILADOR,
+                    reason="fork() y exec() necesitan Linux/WSL con gcc o clang")
+def test_fork_exec_atiende_a_todos_en_paralelo():
+    carpeta = RAIZ / "modulo1_procesos" / "procesos"
+    for nombre in ("hijo_atender", "padre_mostrador"):
+        subprocess.run([COMPILADOR, "-O2", f"{nombre}.c", "-o", nombre], cwd=carpeta, check=True)
+    subprocess.run([str(carpeta / "padre_mostrador")], cwd=RAIZ, check=True,
+                   capture_output=True)
+
+    traza = json.loads((RESULTADOS / "m1_traza_fork.json").read_text(encoding="utf-8"))
+    duraciones = {p["pid"]: p["duracion_ms"] for p in traza}
+    assert sorted(duraciones) == ["P1", "P2", "P3", "P4", "P5"]   # un hijo por solicitud
+    assert len({p["pid_so"] for p in traza}) == 5                    # cada uno con su PID
+    assert duraciones["P3"] >= 900          # el trámite de 9 min dura al menos 900 ms
+    assert max(duraciones.values()) < 0.6 * sum(duraciones.values())  # en paralelo

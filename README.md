@@ -8,27 +8,61 @@ proceso. Sobre esa analogía se construyen los seis módulos del curso.
 ## Instalación
 
 ```
-pip install -r requirements.txt
+pip install -r requirements.txt        (matplotlib y pytest)
 ```
 
 Python 3.11 o más nuevo. La parte en C (`fork`, `exec`, `wait`) necesita Linux
-o WSL con `gcc` o `clang`; en Windows esas opciones no aparecen en el menú.
+o WSL con `gcc` o `clang`; en Windows no aparece en el menú y no hace falta
+ningún compilador.
 
 ## Cómo ejecutar
+
+Todo se hace desde el menú:
 
 ```
 python main.py          Windows
 python3 main.py         Linux / WSL
 ```
 
-Se abre un menú: se escribe el número de una opción, se ejecuta ese módulo y
-al terminar vuelve al menú. `0` sale. En Linux aparece además la opción de
-procesos reales en C, que se compila sola con `gcc` o `clang` la primera vez.
+```
+1. Módulo 1 · Procesos, hilos y planificación   → abre un submenú:
+      1. Procesos reales en C: fork, exec y wait  (solo Linux/WSL)
+      2. Hilos: el mismo trámite con y sin hilos
+      3. Planificación: FCFS, SJF, Round Robin, Prioridad
+      0. Volver al menú principal
+2. Módulo 2 · Sincronización: mutex, productor-consumidor, interbloqueo
+3. Módulo 3 · Memoria: asignación contigua, MMU y reemplazo
+4. Gráficos de todos los módulos
+5. Pruebas automáticas (pytest)
+0. Salir
+```
 
-Pruebas: `python -m pytest tests -q`
+Se escribe el número de una opción; al terminar, Enter vuelve al menú. En
+Windows el submenú del Módulo 1 no muestra la opción en C, así que hilos y
+planificación pasan a ser la 1 y la 2.
+
+- **Procesos en C:** se compilan solos con `gcc` o `clang` la primera vez (o si
+  cambia el código) y usan la jornada corta.
+- **Planificación:** pide la jornada (`jornada_corta` o `jornada_dia`) y el
+  quantum; con Enter usa los valores por defecto (jornada corta, quantum 4).
 
 Las salidas (bitácoras, métricas, figuras) quedan en `resultados/` con el
-prefijo de su módulo (`m1_…`).
+prefijo de su módulo (`m1_…`). Los gráficos se dibujan con los datos de la
+última ejecución de cada parte.
+
+## Pruebas
+
+Opción **5** del menú, o desde la terminal:
+
+```
+python -m pytest tests -v
+```
+
+| Archivo | Qué comprueba |
+|---|---|
+| `tests/test_modulo1.py` | Planificación: los promedios de la jornada corta coinciden con los calculados a mano; SJF tiene la menor espera y Round Robin la menor respuesta; no se pierde ninguna solicitud; las métricas se reconstruyen desde la bitácora. Hilos: con hilos las tareas van a la vez. Procesos: un hijo por solicitud, cada uno con su PID y atendidos en paralelo (solo en Linux/WSL; en Windows aparece como *skipped*). |
+| `tests/test_modulo2.py` | (pendiente) |
+| `tests/test_modulo3.py` | (pendiente) |
 
 ## Estructura
 
