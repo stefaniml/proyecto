@@ -2,5 +2,7 @@
 
 
 def elegir(cola):
-    # el primero de la fila; el quantum lo aplica el motor (planificacion.py)
+    # ELIGE AL PRIMERO DE LA FILA. El turno rotativo lo hace el motor
+    # (planificacion.py): atiende como máximo el quantum y, si no terminó,
+    # lo manda al final de la fila.
     return cola[0]

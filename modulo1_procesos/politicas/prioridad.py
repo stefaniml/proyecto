@@ -2,5 +2,5 @@
 
 
 def elegir(cola):
-    # el de prioridad más alta; si empatan, el que llegó primero
-    return min(cola, key=lambda f: (f.prioridad, f.llegada, f.pid))
+    # ELIGE POR PRIORIDAD: el número más bajo (1 = el más urgente)
+    return min(cola, key=lambda f: f.prioridad)

@@ -20,7 +20,8 @@ int main(int argc, char *argv[]) {
            argv[1], getpid(), argv[2], argv[3], minutos);
     fflush(stdout);
 
-    usleep(minutos * 100 * 1000);            /* el trabajo del tramite */
+    /* LO QUE DURA la atencion: 1 minuto del hotel = 100 ms */
+    usleep(minutos * 100 * 1000);
 
     printf("  -> [%s | PID %d] Atencion completada.\n", argv[1], getpid());
     return 0;                                /* lo recoge el padre con wait() */

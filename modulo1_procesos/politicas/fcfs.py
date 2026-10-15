@@ -2,5 +2,5 @@
 
 
 def elegir(cola):
-    # el que llegó primero al lobby
-    return min(cola, key=lambda f: (f.llegada, f.pid))
+    # ELIGE POR LLEGADA: el que llegó primero al lobby
+    return min(cola, key=lambda f: f.llegada)

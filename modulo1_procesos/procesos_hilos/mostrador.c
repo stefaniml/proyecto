@@ -104,20 +104,26 @@ int main(int argc, char *argv[]) {
 
     const double t0 = ahora_ms();
     for (int i = 0; i < n; i++) {
+        /* ① FORK: el mostrador se duplica; nace un proceso hijo por solicitud */
         pid_t pid = fork();
         if (pid < 0) { perror("fork"); return 1; }
-        if (pid == 0) {                       /* hijo: se convierte en ./atender */
+
+        if (pid == 0) {
+            /* ② EXEC: el hijo deja de ser una copia del mostrador y carga el
+                   programa ./atender, pasandole huesped, tramite y minutos */
             execl(ATENDER, "atender", s[i].id, s[i].huesped, s[i].tramite,
                   s[i].minutos, (char *)NULL);
             perror("execl");                  /* solo llega aqui si exec() fallo */
             _exit(127);
         }
-        s[i].pid = pid;                       /* padre: anota y sigue sin esperar */
+
+        /* el padre anota al hijo y sigue creando los demas, sin esperarlo */
+        s[i].pid = pid;
         printf("[Mostrador] Solicitud %s creada -> proceso hijo PID %d\n", s[i].id, pid);
         fflush(stdout);
     }
 
-    /* wait() devuelve cada hijo en el orden en que termina */
+    /* ③ WAIT: el padre espera a cada hijo, en el orden en que van terminando */
     for (int k = 0; k < n; k++) {
         int estado;
         pid_t pid = wait(&estado);

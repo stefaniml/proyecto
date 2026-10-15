@@ -2,5 +2,5 @@
 
 
 def elegir(cola):
-    # el de menor duración; si empatan, el que llegó primero
-    return min(cola, key=lambda f: (f.duracion, f.llegada, f.pid))
+    # ELIGE POR DURACIÓN: el trámite más corto
+    return min(cola, key=lambda f: f.duracion)

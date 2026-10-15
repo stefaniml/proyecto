@@ -16,7 +16,7 @@ REPETICIONES = 5       # se mide varias veces y se toma la media (promedio)
 
 
 def tarea():
-    time.sleep(DURACION)
+    time.sleep(DURACION)       # LO QUE DURA cada tarea (0.15 s)
 
 
 def sin_hilos(n):
@@ -30,11 +30,18 @@ def sin_hilos(n):
 def con_hilos(n):
     """Un hilo por tarea: todas avanzan a la vez."""
     inicio = time.perf_counter()
+
+    # ① CREA un hilo por cada tarea
     hilos = [threading.Thread(target=tarea) for _ in range(n)]
+
+    # ② LOS ARRANCA: todas las tareas empiezan a la vez
     for h in hilos:
         h.start()
+
+    # ③ LOS ESPERA: el trámite termina cuando acaban todos
     for h in hilos:
-        h.join()           # el trámite no se cierra hasta que todas acaban
+        h.join()
+
     return time.perf_counter() - inicio
 
 
