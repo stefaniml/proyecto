@@ -8,7 +8,8 @@ Muestra un menú numerado; cada opción ejecuta un módulo y al terminar vuelve
 al menú. Las opciones en C (fork, exec, wait) solo aparecen en Linux, donde
 se compilan solas con gcc o clang la primera vez.
 
-Para añadir un módulo: escribir su función y agregar una línea en OPCIONES.
+Para añadir un módulo: escribir su función y agregar una línea en OPCIONES
+(o en la lista de su submenú, como MODULO1).
 """
 import os
 import shutil
@@ -79,10 +80,8 @@ def m1_fork_exec():
     """Programa en C: el SO crea procesos reales con fork(), exec() y wait()."""
     if not compilar("atender", "mostrador"):
         return
-    jornada = pedir_jornada()
-    print()
     sys.stdout.flush()
-    subprocess.run([str(CARPETA_C / "mostrador"), f"escenarios/{jornada}.json"], cwd=RAIZ)
+    subprocess.run([str(CARPETA_C / "mostrador")], cwd=RAIZ)   # usa la jornada corta
 
 
 # ================================================================== Módulo 2 ===
@@ -143,38 +142,49 @@ def graficos():
 
 
 # ===================================================================== menú ===
-OPCIONES = [            # (texto en el menú, función, ¿necesita C/Linux?)
-    ("Módulo 1 · Hilos: el mismo trámite con y sin hilos", m1_hilos, False),
-    ("Módulo 1 · Planificación: FCFS, SJF, Round Robin, Prioridad", m1_planificacion, False),
-    ("Módulo 1 · Procesos reales en C: fork, exec y wait", m1_fork_exec, True),
+# Cada opción es (texto, acción, ¿necesita C/Linux?). La acción es una función,
+# o una lista de opciones: en ese caso se abre como submenú.
+MODULO1 = [
+    ("Hilos: el mismo trámite con y sin hilos", m1_hilos, False),
+    ("Planificación: FCFS, SJF, Round Robin, Prioridad", m1_planificacion, False),
+    ("Procesos reales en C: fork, exec y wait", m1_fork_exec, True),
+]
+
+OPCIONES = [
+    ("Módulo 1 · Procesos, hilos y planificación", MODULO1, False),
     ("Módulo 2 · Sincronización: mutex, productor-consumidor, interbloqueo", m2_sincronizacion, False),
     ("Módulo 3 · Memoria: asignación contigua, MMU y reemplazo", m3_memoria, False),
     ("Gráficos de todos los módulos", graficos, False),
 ]
 
 
-def menu():
-    disponibles = [op for op in OPCIONES if HAY_C or not op[2]]
+def menu(titulo, opciones, salida):
+    """Muestra las opciones, ejecuta la elegida y repite hasta que se elige 0."""
+    disponibles = [op for op in opciones if HAY_C or not op[2]]
+    ocultas = len(disponibles) < len(opciones)
     while True:
-        print(f"\n{'=' * 70}\n  SO-Sim · Hotel Las Estrellas\n{'=' * 70}")
+        print(f"\n{'=' * 70}\n  {titulo}\n{'=' * 70}")
         for numero, (texto, _, _) in enumerate(disponibles, start=1):
             print(f"  {numero}. {texto}")
-        print("  0. Salir")
-        if not HAY_C:
+        print(f"  0. {salida}")
+        if ocultas:
             print("\n  (Las opciones en C solo aparecen en Linux o WSL)")
 
         eleccion = input("\nElige una opción: ").strip()
         if eleccion == "0":
-            print("Hasta luego.")
             return
         if not eleccion.isdigit() or not 1 <= int(eleccion) <= len(disponibles):
             print(f"  '{eleccion}' no es una opción válida. Escribe un número del 0 al {len(disponibles)}.")
             continue
 
-        texto, funcion, _ = disponibles[int(eleccion) - 1]
+        texto, accion, _ = disponibles[int(eleccion) - 1]
+        if isinstance(accion, list):                # submenú: al salir vuelve aquí
+            menu(texto, accion, "Volver al menú principal")
+            continue
+
         print(f"\n{'#' * 70}\n#  {texto}\n{'#' * 70}\n")
         try:
-            funcion()
+            accion()
         except KeyboardInterrupt:
             print("\n  Interrumpido.")
         except Exception as error:              # un módulo que falla no cierra el menú
@@ -184,6 +194,7 @@ def menu():
 
 if __name__ == "__main__":
     try:
-        menu()
+        menu("SO-Sim · Hotel Las Estrellas", OPCIONES, "Salir")
+        print("Hasta luego.")
     except (KeyboardInterrupt, EOFError):
         print("\nHasta luego.")
