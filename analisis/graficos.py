@@ -4,7 +4,7 @@ Cada módulo deja sus datos en resultados/ y aquí se dibujan sus figuras.
 Para añadir las de otro módulo: escribir su función (usando las
 herramientas comunes de abajo) y registrarla en FIGURAS.
 
-    python main.py graficos      dibuja todas las que tengan datos
+    Desde el menú de main.py, opción «Gráficos»: dibuja las que tengan datos.
 """
 import json
 
@@ -110,9 +110,9 @@ def fork_exec():
 
 # (módulo, figura, función, qué ejecutar antes si faltan datos)
 FIGURAS = [
-    (1, "comparación de políticas", comparacion_politicas, "python main.py 1 planificacion"),
-    (1, "con y sin hilos", hilos, "python main.py 1 hilos"),
-    (1, "fork y exec", fork_exec, "./modulo1_procesos/procesos_hilos/mostrador  (Linux/WSL)"),
+    (1, "comparación de políticas", comparacion_politicas, "la opción Planificación del menú"),
+    (1, "con y sin hilos", hilos, "la opción Hilos del menú"),
+    (1, "fork y exec", fork_exec, "la opción de procesos en C del menú (Linux/WSL)"),
 ]
 
 

@@ -139,7 +139,7 @@ int main(int argc, char *argv[]) {
                     s[i].id, s[i].huesped, s[i].pid, s[i].fin_ms, i + 1 < n ? "," : "");
         fprintf(f, "]\n");
         fclose(f);
-        printf("\nTraza en resultados/m1_traza_fork.json  ->  python main.py graficos\n");
+        printf("\nTraza en resultados/m1_traza_fork.json  ->  opcion Graficos del menu\n");
     }
     return 0;
 }

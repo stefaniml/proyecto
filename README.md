@@ -12,26 +12,20 @@ pip install -r requirements.txt
 ```
 
 Python 3.11 o más nuevo. La parte en C (`fork`, `exec`, `wait`) necesita Linux
-o WSL con `gcc` y `make`.
+o WSL con `gcc` o `clang`; en Windows esas opciones no aparecen en el menú.
 
 ## Cómo ejecutar
 
 ```
-python main.py                         todos los módulos y luego los gráficos
-python main.py 1                       Módulo 1 completo
-python main.py 1 planificacion         una parte: planificacion | hilos
-python main.py 1 planificacion --jornada jornada_dia --quantum 2
-python main.py graficos                figuras de todos los módulos
-python -m pytest tests -q              pruebas
+python main.py          Windows
+python3 main.py         Linux / WSL
 ```
 
-Procesos reales en C (Linux/WSL):
+Se abre un menú: se escribe el número de una opción, se ejecuta ese módulo y
+al terminar vuelve al menú. `0` sale. En Linux aparece además la opción de
+procesos reales en C, que se compila sola con `gcc` o `clang` la primera vez.
 
-```
-make -C modulo1_procesos/procesos_hilos
-./modulo1_procesos/procesos_hilos/mostrador                       # jornada corta
-./modulo1_procesos/procesos_hilos/mostrador escenarios/jornada_dia.json
-```
+Pruebas: `python -m pytest tests -q`
 
 Las salidas (bitácoras, métricas, figuras) quedan en `resultados/` con el
 prefijo de su módulo (`m1_…`).
@@ -39,7 +33,7 @@ prefijo de su módulo (`m1_…`).
 ## Estructura
 
 ```
-main.py                     orden única; cada módulo se registra en MODULOS
+main.py                     menú principal; cada opción es una línea en OPCIONES
 core/                       lo compartido por todos los módulos
   modelos.py                FichaHuesped (PCB) · EventoBitacora · EstadoProceso
   cargador.py               lee un escenario JSON
