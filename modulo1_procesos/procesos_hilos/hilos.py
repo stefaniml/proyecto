@@ -59,9 +59,6 @@ def ejecutar():
                       "con_hilos": round(con, 4), "mejora": round(sec / con, 2)})
         print(f"  {tramite:<10}{n:>7}{sec:>11.2f}s{con:>11.2f}s{sec / con:>8.2f}×")
 
-    print("\n  Sin hilos el tiempo crece con cada tarea; con hilos dura lo que la")
-    print("  más lenta. No llega al ideal porque crear y esperar hilos también cuesta.")
-
     RESULTADOS.mkdir(exist_ok=True)
     ruta = RESULTADOS / "m1_hilos.json"
     with open(ruta, "w", encoding="utf-8") as f:
