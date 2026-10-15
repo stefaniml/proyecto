@@ -2,13 +2,13 @@
  * Hotel Las Estrellas · SW407 Sistemas Operativos · UNI
  *
  * El mostrador lee la jornada (el mismo JSON que usa Python) y crea un proceso
- * hijo por solicitud con fork(). Cada hijo se convierte en ./atender con
+ * hijo por solicitud con fork(). Cada hijo se convierte en ./hijo_atender con
  * exec(), y el padre los recoge con wait(). Al final compara cuanto duro la
  * jornada en paralelo con lo que habria durado atendiendo uno tras otro.
  *
  * Requiere Linux o WSL.
- *   make -C modulo1_procesos/procesos_hilos
- *   ./modulo1_procesos/procesos_hilos/mostrador [escenarios/jornada_dia.json]
+ *   make -C modulo1_procesos/procesos
+ *   ./modulo1_procesos/procesos/padre_mostrador [escenarios/jornada_dia.json]
  */
 #include <limits.h>
 #include <stdio.h>
@@ -21,7 +21,7 @@
 
 #define MAX 32
 #define JORNADA "escenarios/jornada_corta.json"
-#define ATENDER "modulo1_procesos/procesos_hilos/atender"
+#define ATENDER "modulo1_procesos/procesos/hijo_atender"
 
 struct Solicitud {
     char id[8], huesped[48], tramite[64], minutos[8];
@@ -94,7 +94,7 @@ int main(int argc, char *argv[]) {
     int n = leer_jornada(ruta, s);
     if (n <= 0) return 1;
     if (access(ATENDER, X_OK) != 0) {
-        fprintf(stderr, "Falta %s. Compila con: make -C modulo1_procesos/procesos_hilos\n", ATENDER);
+        fprintf(stderr, "Falta %s. Compila con: make -C modulo1_procesos/procesos\n", ATENDER);
         return 1;
     }
 
@@ -110,8 +110,8 @@ int main(int argc, char *argv[]) {
 
         if (pid == 0) {
             /* ② EXEC: el hijo deja de ser una copia del mostrador y carga el
-                   programa ./atender, pasandole huesped, tramite y minutos */
-            execl(ATENDER, "atender", s[i].id, s[i].huesped, s[i].tramite,
+                   programa ./hijo_atender, pasandole huesped, tramite y minutos */
+            execl(ATENDER, "hijo_atender", s[i].id, s[i].huesped, s[i].tramite,
                   s[i].minutos, (char *)NULL);
             perror("execl");                  /* solo llega aqui si exec() fallo */
             _exit(127);

@@ -12,7 +12,7 @@ import pytest
 
 from core.cargador import CargadorJornada
 from modulo1_procesos import ESCENARIOS
-from modulo1_procesos.planificacion import correr
+from modulo1_procesos.planificacion.planificador import correr
 
 # (espera, respuesta, retorno) promedio de la jornada corta, calculados a mano
 ESPERADO = {

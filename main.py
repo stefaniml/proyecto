@@ -21,7 +21,7 @@ RAIZ = Path(__file__).resolve().parent
 sys.path.insert(0, str(RAIZ))
 
 HAY_C = os.name == "posix"          # Linux / WSL: fork() y exec() existen
-CARPETA_C = RAIZ / "modulo1_procesos" / "procesos_hilos"
+CARPETA_C = RAIZ / "modulo1_procesos" / "procesos"
 
 
 # ================================================================ utilidades ===
@@ -61,27 +61,27 @@ def compilar(*programas):
 
 # ================================================================== Módulo 1 ===
 def m1_hilos():
-    from modulo1_procesos.procesos_hilos import hilos
+    from modulo1_procesos.hilos import hilos
     hilos.ejecutar()
 
 
 def m1_planificacion():
-    from modulo1_procesos import planificacion
+    from modulo1_procesos.planificacion import planificador
     jornada = pedir_jornada()
     quantum = preguntar("Quantum de Round Robin (minutos)", "4")
     if not quantum.isdigit() or int(quantum) < 1:
         print("  El quantum debe ser un entero positivo, se usa 4.")
         quantum = "4"
     print()
-    planificacion.ejecutar(jornada, int(quantum))
+    planificador.ejecutar(jornada, int(quantum))
 
 
 def m1_fork_exec():
     """Programa en C: el SO crea procesos reales con fork(), exec() y wait()."""
-    if not compilar("atender", "mostrador"):
+    if not compilar("hijo_atender", "padre_mostrador"):
         return
     sys.stdout.flush()
-    subprocess.run([str(CARPETA_C / "mostrador")], cwd=RAIZ)   # usa la jornada corta
+    subprocess.run([str(CARPETA_C / "padre_mostrador")], cwd=RAIZ)   # usa la jornada corta
 
 
 # ================================================================== Módulo 2 ===

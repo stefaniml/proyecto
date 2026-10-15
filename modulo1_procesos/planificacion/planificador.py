@@ -7,7 +7,7 @@ proceso (FichaHuesped = PCB). Este archivo tiene tres partes:
   2. verificar()   comprueba que la bitácora coincide con los resultados
   3. ejecutar()    corre las cuatro políticas, imprime y guarda
 
-Cada política (carpeta politicas/) solo decide a quién atiende el mostrador
+Cada política (fcfs.py, sjf.py, …) solo decide a quién atiende el mostrador
 a continuación. Todo lo demás es igual para las cuatro.
 """
 import json
@@ -19,7 +19,7 @@ from core.metricas import CalculadorMetricas
 from core.modelos import EstadoProceso
 from core.reloj import RelojLogico
 from modulo1_procesos import ESCENARIOS, RESULTADOS
-from modulo1_procesos.politicas import fcfs, prioridad, round_robin, sjf
+from modulo1_procesos.planificacion import fcfs, prioridad, round_robin, sjf
 
 
 # ============================================================ 1. el motor ===

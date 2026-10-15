@@ -42,9 +42,13 @@ core/                       lo compartido por todos los módulos
 escenarios/                 entradas: jornada_corta.json · jornada_dia.json · tareas.json
 analisis/graficos.py        gráficos de TODOS los módulos, con un mismo estilo
 modulo1_procesos/           Módulo 1 — procesos, hilos y planificación
-  planificacion.py          motor común, verificación con la bitácora y comparación
-  politicas/                fcfs.py · sjf.py · round_robin.py · prioridad.py
-  procesos_hilos/           hilos.py · mostrador.c · atender.c · Makefile
+  procesos/                 fork, exec y wait en C (Linux/WSL)
+    padre_mostrador.c       el padre: fork() y wait()
+    hijo_atender.c          el programa que cada hijo carga con exec()
+  hilos/hilos.py            threading: crear, arrancar (start) y esperar (join)
+  planificacion/            FCFS, SJF, Round Robin y Prioridad
+    planificador.py         motor común: cola de listos, quantum, métricas
+    fcfs.py · sjf.py · round_robin.py · prioridad.py
 modulo2_sincronizacion/     Módulo 2 — registro, limpieza, interbloqueo
 modulo3_memoria/            Módulo 3 — contigua/ y paginacion/
 tests/                      pruebas con pytest
@@ -71,7 +75,7 @@ cada solicitud se pueden **reconstruir solo desde la bitácora**.
 tarea. Las tareas de cada trámite están en `escenarios/tareas.json`.
 
 **fork / exec / wait (Semana 3, C).** El mostrador lee la misma jornada JSON,
-crea un proceso por solicitud con `fork()`, cada hijo carga `./atender` con
+crea un proceso por solicitud con `fork()`, cada hijo carga `./hijo_atender` con
 `exec()` y el padre los recoge con `wait()`. Al final compara la jornada en
 paralelo con lo que habría durado uno tras otro (~0.9 s frente a ~2.5 s con la
 jornada corta).
