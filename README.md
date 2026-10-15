@@ -43,8 +43,8 @@ planificación pasan a ser la 1 y la 2.
 
 - **Procesos en C:** se compilan solos con `gcc` o `clang` la primera vez (o si
   cambia el código) y usan la jornada corta.
-- **Planificación:** pide la jornada (`jornada_corta` o `jornada_dia`) y el
-  quantum; con Enter usa los valores por defecto (jornada corta, quantum 4).
+- **Planificación:** usa la jornada corta y solo pide el quantum de Round Robin
+  (con Enter, 4).
 
 Las salidas (bitácoras, métricas, figuras) quedan en `resultados/` con el
 prefijo de su módulo (`m1_…`). Los gráficos se dibujan con los datos de la

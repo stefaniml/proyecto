@@ -31,15 +31,6 @@ def preguntar(texto, defecto):
     return respuesta or defecto
 
 
-def pedir_jornada():
-    jornadas = sorted(p.stem for p in (RAIZ / "escenarios").glob("jornada_*.json"))
-    jornada = preguntar(f"Jornada ({' / '.join(jornadas)})", "jornada_corta")
-    if jornada not in jornadas:
-        print(f"  No existe '{jornada}', se usa jornada_corta.")
-        jornada = "jornada_corta"
-    return jornada
-
-
 def compilar(*programas):
     """Compila los .c que falten o hayan cambiado. Devuelve False si no se pudo."""
     compilador = shutil.which("gcc") or shutil.which("clang")
@@ -67,13 +58,12 @@ def m1_hilos():
 
 def m1_planificacion():
     from modulo1_procesos.planificacion import planificador
-    jornada = pedir_jornada()
     quantum = preguntar("Quantum de Round Robin (minutos)", "4")
     if not quantum.isdigit() or int(quantum) < 1:
         print("  El quantum debe ser un entero positivo, se usa 4.")
         quantum = "4"
     print()
-    planificador.ejecutar(jornada, int(quantum))
+    planificador.ejecutar("jornada_corta", int(quantum))
 
 
 def m1_fork_exec():
