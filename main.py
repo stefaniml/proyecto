@@ -76,29 +76,35 @@ def m1_fork_exec():
 
 # ================================================================== Módulo 2 ===
 def m2_sincronizacion():
-    import threading
-    from modulo2_sincronizacion.interbloqueo import SimulaciónInterbloqueo
+    """Tres situaciones de la semana 5: carrera, productor-consumidor e interbloqueo."""
+    from modulo2_sincronizacion.interbloqueo import PasilloDeLlaves
     from modulo2_sincronizacion.limpieza import BufferLimpieza
     from modulo2_sincronizacion.registro import RegistroHotel
 
-    print("  Registro de la habitación 302 con 5 recepcionistas a la vez:")
-    for usar_mutex in (True, False):
-        duplicados = RegistroHotel(usar_mutex).simular_concurrencia(5)
-        print(f"    {'con mutex' if usar_mutex else 'sin mutex'}: duplicados = {duplicados}")
+    # --- 1. condición de carrera y exclusión mutua ---------------------------
+    print("  [1] Condición de carrera · 5 recepcionistas reservan la 302 a la vez")
+    for usar_mutex in (False, True):
+        r = RegistroHotel(usar_mutex).simular(5)
+        print(f"      {'Con mutex' if usar_mutex else 'Sin mutex'}   "
+              f"{r['escrituras']} escritura(s)  ->  {r['sobreventas']} sobreventa(s)")
 
-    buffer = BufferLimpieza(capacidad=3)
-    buffer.simular_productor_consumidor(total_items=10)
-    print(f"\n  Productor-consumidor (búfer de 3, 10 habitaciones): "
-          f"búfer vacío al final = {buffer.buffer == []}")
+    # --- 2. productor-consumidor con semáforos -------------------------------
+    a = BufferLimpieza(capacidad=3).simular(total=10)
+    print(f"\n  [2] Productor-consumidor · armario de {a['capacidad']} sitios, "
+          f"{a['producidos']} sábanas")
+    print(f"      Producidas {a['producidos']} · recogidas {a['consumidos']} · "
+          f"{'ninguna perdida' if a['sin_perdidas'] else 'HUBO PÉRDIDAS'}")
+    print(f"      Ocupación máxima {a['ocupacion_maxima']} de {a['capacidad']}")
+    print(f"      Esperas: lavandería {a['esperas_lavanderia']} (lleno) · "
+          f"recepción {a['esperas_recepcion']} (vacío)")
 
-    sim = SimulaciónInterbloqueo()
-    hilos = [threading.Thread(target=sim.tarea_sin_orden, args=(rol,)) for rol in (True, False)]
-    for h in hilos:
-        h.start()
-    for h in hilos:
-        h.join()
-    sim.tarea_con_orden_unico()
-    print("  Interbloqueo: llave maestra y carrito, sin orden y con orden único -> terminó")
+    # --- 3. interbloqueo y cómo se previene ----------------------------------
+    print("\n  [3] Interbloqueo · 5 huéspedes en círculo, cada uno necesita 2 llaves")
+    for con_orden, como in ((False, "Todos: izquierda y luego derecha"),
+                            (True, "El último empieza por la derecha")):
+        d = PasilloDeLlaves(huespedes=5).simular(con_orden)
+        print(f"      {como:<34}entraron {d['entraron']} de {d['huespedes']}  ->  "
+              f"{d['bloqueados']} bloqueado(s)")
 
 
 # ================================================================== Módulo 3 ===
