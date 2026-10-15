@@ -26,7 +26,7 @@ python3 main.py         Linux / WSL
 
 ```
 1. Módulo 1 · Procesos, hilos y planificación   → abre un submenú:
-      1. Procesos reales en C: fork, exec y wait  (solo Linux/WSL)
+      1. Procesos en C: fork, exec y wait (Linux/WSL)
       2. Hilos: el mismo trámite con y sin hilos
       3. Planificación: FCFS, SJF, Round Robin, Prioridad
       0. Volver al menú principal
@@ -76,7 +76,7 @@ core/                       lo compartido por todos los módulos
 escenarios/                 entradas: jornada_corta.json · jornada_dia.json · tareas.json
 analisis/graficos.py        gráficos de TODOS los módulos, con un mismo estilo
 modulo1_procesos/           Módulo 1 — procesos, hilos y planificación
-  procesos/                 fork, exec y wait en C (Linux/WSL)
+  procesos_c/               fork, exec y wait en C (Linux/WSL)
     padre_mostrador.c       el padre: fork() y wait()
     hijo_atender.c          el programa que cada hijo carga con exec()
   hilos/hilos.py            threading: crear, arrancar (start) y esperar (join)

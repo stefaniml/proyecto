@@ -21,7 +21,7 @@ RAIZ = Path(__file__).resolve().parent
 sys.path.insert(0, str(RAIZ))
 
 HAY_C = os.name == "posix"          # Linux / WSL: fork() y exec() existen
-CARPETA_C = RAIZ / "modulo1_procesos" / "procesos"
+CARPETA_C = RAIZ / "modulo1_procesos" / "procesos_c"
 
 
 # ================================================================ utilidades ===
@@ -155,7 +155,7 @@ def pruebas():
 # Cada opción es (texto, acción, ¿necesita C/Linux?). La acción es una función,
 # o una lista de opciones: en ese caso se abre como submenú.
 MODULO1 = [
-    ("Procesos reales en C: fork, exec y wait", m1_fork_exec, True),
+    ("Procesos en C: fork, exec y wait (Linux/WSL)", m1_fork_exec, True),
     ("Hilos: el mismo trámite con y sin hilos", m1_hilos, False),
     ("Planificación: FCFS, SJF, Round Robin, Prioridad", m1_planificacion, False),
 ]

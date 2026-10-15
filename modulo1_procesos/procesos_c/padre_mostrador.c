@@ -7,8 +7,8 @@
  * jornada en paralelo con lo que habria durado atendiendo uno tras otro.
  *
  * Requiere Linux o WSL.
- *   make -C modulo1_procesos/procesos
- *   ./modulo1_procesos/procesos/padre_mostrador [escenarios/jornada_dia.json]
+ *   make -C modulo1_procesos/procesos_c
+ *   ./modulo1_procesos/procesos_c/padre_mostrador [escenarios/jornada_dia.json]
  */
 #include <limits.h>
 #include <stdio.h>
@@ -21,7 +21,7 @@
 
 #define MAX 32
 #define JORNADA "escenarios/jornada_corta.json"
-#define ATENDER "modulo1_procesos/procesos/hijo_atender"
+#define ATENDER "modulo1_procesos/procesos_c/hijo_atender"
 
 struct Solicitud {
     char id[8], huesped[48], tramite[64], minutos[8];
@@ -94,7 +94,7 @@ int main(int argc, char *argv[]) {
     int n = leer_jornada(ruta, s);
     if (n <= 0) return 1;
     if (access(ATENDER, X_OK) != 0) {
-        fprintf(stderr, "Falta %s. Compila con: make -C modulo1_procesos/procesos\n", ATENDER);
+        fprintf(stderr, "Falta %s. Compila con: make -C modulo1_procesos/procesos_c\n", ATENDER);
         return 1;
     }
 

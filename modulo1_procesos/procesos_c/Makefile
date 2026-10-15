@@ -1,6 +1,6 @@
 # Compila los dos programas de procesos del Modulo 1 (Linux o WSL).
-#   make -C modulo1_procesos/procesos          compila
-#   make -C modulo1_procesos/procesos clean    borra los ejecutables
+#   make -C modulo1_procesos/procesos_c          compila
+#   make -C modulo1_procesos/procesos_c clean    borra los ejecutables
 
 CC     = gcc
 CFLAGS = -Wall -Wextra -O2

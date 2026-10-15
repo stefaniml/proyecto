@@ -85,7 +85,7 @@ COMPILADOR = shutil.which("gcc") or shutil.which("clang")
 @pytest.mark.skipif(os.name != "posix" or not COMPILADOR,
                     reason="fork() y exec() necesitan Linux/WSL con gcc o clang")
 def test_fork_exec_atiende_a_todos_en_paralelo():
-    carpeta = RAIZ / "modulo1_procesos" / "procesos"
+    carpeta = RAIZ / "modulo1_procesos" / "procesos_c"
     for nombre in ("hijo_atender", "padre_mostrador"):
         subprocess.run([COMPILADOR, "-O2", f"{nombre}.c", "-o", nombre], cwd=carpeta, check=True)
     subprocess.run([str(carpeta / "padre_mostrador")], cwd=RAIZ, check=True,
