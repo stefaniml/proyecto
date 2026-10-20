@@ -12,7 +12,7 @@ import time
 from modulo1_procesos import ESCENARIOS, RESULTADOS
 
 DURACION = 0.15        # segundos que "cuesta" cada tarea (espera de banco, impresora...)
-REPETICIONES = 5       # se mide varias veces y se toma la media (promedio)
+REPETICIONES = 3       # se mide varias veces y se toma la media (promedio)
 
 
 def tarea():
