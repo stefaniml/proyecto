@@ -61,8 +61,8 @@ python -m pytest tests -v
 | Archivo | Qué comprueba |
 |---|---|
 | `tests/test_modulo1.py` | Planificación: los promedios de la jornada corta coinciden con los calculados a mano; SJF tiene la menor espera y Round Robin la menor respuesta; no se pierde ninguna solicitud; las métricas se reconstruyen desde la bitácora. Hilos: con hilos las tareas van a la vez. Procesos: un hijo por solicitud, cada uno con su PID y atendidos en paralelo (solo en Linux/WSL; en Windows aparece como *skipped*). |
-| `tests/test_modulo2.py` | (pendiente) |
-| `tests/test_modulo3.py` | (pendiente) |
+| `tests/test_modulo2.py` | Sin mutex la misma habitación se entrega más de una vez; con mutex, exactamente una. El armario no pierde ni duplica sábanas y nunca pasa de su capacidad. Sin orden hay interbloqueo; con asignación asimétrica, 20 rondas seguidas sin bloqueo. |
+| `tests/test_modulo3.py` | La MMU traduce tres direcciones calculadas a mano; una página fuera de la tabla es un fallo de página. Fragmentación externa: sobra sitio pero el grupo no entra. FIFO, LRU y Óptimo dan los fallos contados a mano, y Óptimo ≤ LRU ≤ FIFO. |
 
 ## Estructura
 
